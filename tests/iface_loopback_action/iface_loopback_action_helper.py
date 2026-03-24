@@ -196,6 +196,7 @@ def remove_orig_dut_port_config(duthost, orig_ports_configuration):
     :param orig_ports_configuration: original ports configuration parameters
     """
     remove_acl_tables(duthost)
+    ports_to_verify_rif_removal = []
     for _, port_dict in list(orig_ports_configuration.items()):
         port = port_dict['port']
         if port_dict['vlan']:
@@ -212,6 +213,13 @@ def remove_orig_dut_port_config(duthost, orig_ports_configuration):
         elif port_dict['ip_addr']:
             for ip in port_dict['ip_addr']:
                 remove_dut_ip_from_port(duthost, port, ip)
+            verify_port_rif_removed_asic_db(
+                duthost,
+                port,
+                timeout=40,
+                interval=2,
+                exact=True
+            )
 
 
 def get_portchannel_peer_port_map(duthost, orig_ports_configuration, tbinfo, nbrhosts):
